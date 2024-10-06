@@ -1,49 +1,56 @@
+using System;
+using Components;
+using Facades;
+using Input;
+using ShootEmUp;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Character
 {
-    public sealed class CharacterController : MonoBehaviour
+    public interface ICharacterController
     {
-        [SerializeField] private GameObject character; 
-        [SerializeField] private GameManager gameManager;
-        [SerializeField] private BulletSystem _bulletSystem;
-        [SerializeField] private BulletConfig _bulletConfig;
-        
-        public bool _fireRequired;
+        HitPointsComponent GetHitPointsComponent();
+        MoveComponent GetMoveComponent();
+    }
 
+    public interface IRegistry
+    {
+        public void Registry();
+    }
+
+    public sealed class CharacterController : MonoBehaviour, ICharacterController, IRegistry
+    {
+        [SerializeField] private InputManager _inputManager;
+        [SerializeField] private MoveComponent _moveComponent;
+        [SerializeField] private HitPointsComponent _hitPointsComponent;
+        [SerializeField] private ShootFacade _shootFacade;
+        
+        
         private void OnEnable()
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
+            _inputManager.OnHorizontalDirectionChanged += _moveComponent.SetDirectToMove;
+            _inputManager.OnShoot += _shootFacade.Shoot;
         }
 
         private void OnDisable()
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty -= this.OnCharacterDeath;
+            _inputManager.OnHorizontalDirectionChanged -= _moveComponent.SetDirectToMove;
+            _inputManager.OnShoot -= _shootFacade.Shoot;
         }
 
-        private void OnCharacterDeath(GameObject _) => this.gameManager.FinishGame();
-
-        private void FixedUpdate()
+        public HitPointsComponent GetHitPointsComponent()
         {
-            if (this._fireRequired)
-            {
-                this.OnFlyBullet();
-                this._fireRequired = false;
-            }
+            return _hitPointsComponent;
         }
 
-        private void OnFlyBullet()
+        public MoveComponent GetMoveComponent()
         {
-            var weapon = this.character.GetComponent<WeaponComponent>();
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
-            {
-                isPlayer = true,
-                physicsLayer = (int) this._bulletConfig.physicsLayer,
-                color = this._bulletConfig.color,
-                damage = this._bulletConfig.damage,
-                position = weapon.Position,
-                velocity = weapon.Rotation * Vector3.up * this._bulletConfig.speed
-            });
+            return _moveComponent;
+        }
+
+        public void Registry()
+        {
+            AddictionManager.Instance.Registy(typeof(ICharacterController), this);
         }
     }
 }

@@ -1,26 +1,19 @@
 using System.Collections.Generic;
+using Enemy.Agents;
+using ShootEmUp;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Enemy
 {
     public sealed class EnemyPool : MonoBehaviour
     {
         [Header("Spawn")]
-        [SerializeField]
-        private EnemyPositions enemyPositions;
-
-        [SerializeField]
-        private GameObject character;
-
-        [SerializeField]
-        private Transform worldTransform;
-
+        [SerializeField] private EnemyPositions enemyPositions;
+        [SerializeField] private GameObject character;
+        [SerializeField] private Transform worldTransform;
         [Header("Pool")]
-        [SerializeField]
-        private Transform container;
-
-        [SerializeField]
-        private GameObject prefab;
+        [SerializeField] private Transform container;
+        [SerializeField] private GameObject prefab;
 
         private readonly Queue<GameObject> enemyPool = new();
         

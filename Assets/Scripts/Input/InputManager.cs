@@ -1,41 +1,59 @@
 using UnityEngine;
+using UnityEngine.Events;
 
-namespace ShootEmUp
+namespace Input
 {
     public sealed class InputManager : MonoBehaviour
     {
-        public float HorizontalDirection { get; private set; }
+        private Vector2 _direct;
 
-        [SerializeField]
-        private GameObject character;
+        public Vector2 Direct
+        {
+            get => _direct;
+            set
+            {
+                _direct = value;
+                OnHorizontalDirectionChanged?.Invoke(value);
+            }
+        }
 
-        [SerializeField]
-        private CharacterController characterController;
+        public UnityAction OnShoot;
+        public UnityAction<Vector2> OnHorizontalDirectionChanged;
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (UnityEngine.Input.GetKey(KeyCode.Space))
             {
-                characterController._fireRequired = true;
+                OnShoot?.Invoke();
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (UnityEngine.Input.GetKey(KeyCode.A))
             {
-                this.HorizontalDirection = -1;
+                this._direct.x = -1;
             }
-            else if (Input.GetKey(KeyCode.RightArrow))
+            else if (UnityEngine.Input.GetKey(KeyCode.D))
             {
-                this.HorizontalDirection = 1;
+                this._direct.x = 1;
             }
             else
             {
-                this.HorizontalDirection = 0;
+                this._direct.x = 0;
             }
-        }
-        
-        private void FixedUpdate()
-        {
-            this.character.GetComponent<MoveComponent>().MoveByRigidbodyVelocity(new Vector2(this.HorizontalDirection, 0) * Time.fixedDeltaTime);
+            
+            if (UnityEngine.Input.GetKey(KeyCode.W))
+            {
+                this._direct.y = 1;
+            }
+            else if (UnityEngine.Input.GetKey(KeyCode.S))
+            {
+                this._direct.y = -1;
+            }
+            else
+            {
+                this._direct.y = 0;
+            }
+            
+            OnHorizontalDirectionChanged?.Invoke(_direct);
         }
     }
 }

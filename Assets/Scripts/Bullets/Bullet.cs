@@ -1,44 +1,59 @@
 using System;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Bullets
 {
+    public struct BulletData
+    {
+        public bool isPlayer;
+        public int damage;
+        public Color color;
+        public Vector3 position;
+        public Vector2 velocity;
+        public int physicsLayer;
+    }
+    
     public sealed class Bullet : MonoBehaviour
     {
-        public event Action<Bullet, Collision2D> OnCollisionEntered;
+        [SerializeField] private Rigidbody2D _rigidbody2D;
+        [SerializeField] private SpriteRenderer spriteRenderer;
 
-        [NonSerialized] public bool isPlayer;
-        [NonSerialized] public int damage;
+        public BulletData BulletData { get; private set; }
 
-        [SerializeField]
-        private new Rigidbody2D rigidbody2D;
+        public event Action<Bullet, GameObject> OnCollisionEntered;
 
-        [SerializeField]
-        private SpriteRenderer spriteRenderer;
-
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            this.OnCollisionEntered?.Invoke(this, collision);
+            this.OnCollisionEntered?.Invoke(this, collision.gameObject);
+        }
+
+        public void SetData(BulletData data)
+        {
+            BulletData = data;
+            SetVelocity(BulletData.velocity);
+            SetColor(BulletData.color);
+            SetPosition(BulletData.position);
+            SetPhysicsLayer(BulletData.physicsLayer);
         }
 
         public void SetVelocity(Vector2 velocity)
         {
-            this.rigidbody2D.velocity = velocity;
+            _rigidbody2D.velocity = velocity;
         }
 
         public void SetPhysicsLayer(int physicsLayer)
         {
-            this.gameObject.layer = physicsLayer;
+            gameObject.layer = physicsLayer;
         }
 
         public void SetPosition(Vector3 position)
         {
-            this.transform.position = position;
+            transform.position = position;
         }
 
         public void SetColor(Color color)
         {
-            this.spriteRenderer.color = color;
+            spriteRenderer.color = color;
         }
     }
 }

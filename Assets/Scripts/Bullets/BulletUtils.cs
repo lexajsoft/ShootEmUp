@@ -1,6 +1,8 @@
+using Components;
+using ShootEmUp;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Bullets
 {
     internal static class BulletUtils
     {
@@ -11,14 +13,14 @@ namespace ShootEmUp
                 return;
             }
 
-            if (bullet.isPlayer == team.IsPlayer)
+            if (bullet.BulletData.isPlayer == team.IsPlayer)
             {
                 return;
             }
 
             if (other.TryGetComponent(out HitPointsComponent hitPoints))
             {
-                hitPoints.TakeDamage(bullet.damage);
+                hitPoints.TakeDamage(bullet.BulletData.damage);
             }
         }
     }

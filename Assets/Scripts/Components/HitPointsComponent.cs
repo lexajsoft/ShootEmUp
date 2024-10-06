@@ -1,25 +1,37 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ShootEmUp
 {
     public sealed class HitPointsComponent : MonoBehaviour
     {
-        public event Action<GameObject> hpEmpty;
+        public event Action<GameObject> OnIsLiveChanged;
+        public event UnityAction<int> OnHitPointsChanged; 
         
-        [SerializeField] private int hitPoints;
+        [SerializeField] private int _hitPoints;
         
-        public bool IsHitPointsExists() {
-            return this.hitPoints > 0;
+        public bool IsLive() {
+            return this._hitPoints > 0;
         }
 
         public void TakeDamage(int damage)
         {
-            this.hitPoints -= damage;
-            if (this.hitPoints <= 0)
+            if (damage > 0)
             {
-                this.hpEmpty?.Invoke(this.gameObject);
+                
+                _hitPoints -= damage;
+                OnHitPointsChanged?.Invoke(_hitPoints);
+                if (_hitPoints <= 0)
+                {
+                    OnIsLiveChanged?.Invoke(this.gameObject);
+                }
             }
+        }
+
+        public int GetHitPoints()
+        {
+            return _hitPoints;
         }
     }
 }

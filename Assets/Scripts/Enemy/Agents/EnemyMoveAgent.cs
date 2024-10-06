@@ -1,15 +1,16 @@
+using Components;
 using UnityEngine;
 
-namespace ShootEmUp
+namespace Enemy.Agents
 {
     public sealed class EnemyMoveAgent : MonoBehaviour
     {
+        [SerializeField] private MoveComponent moveComponent;
+        
         public bool IsReached
         {
             get { return this.isReached; }
         }
-
-        [SerializeField] private MoveComponent moveComponent;
 
         private Vector2 destination;
 
@@ -25,6 +26,7 @@ namespace ShootEmUp
         {
             if (this.isReached)
             {
+                this.moveComponent.SetDirectToMove(Vector2.zero);
                 return;
             }
             
@@ -35,8 +37,8 @@ namespace ShootEmUp
                 return;
             }
 
-            var direction = vector.normalized * Time.fixedDeltaTime;
-            this.moveComponent.MoveByRigidbodyVelocity(direction);
+            var direction = vector.normalized;
+            this.moveComponent.SetDirectToMove(direction);
         }
     }
 }
