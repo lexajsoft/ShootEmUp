@@ -1,10 +1,12 @@
 using Components;
+using GameLoop;
+using GameLoop.Interfaces;
 using ShootEmUp;
 using UnityEngine;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyAttackAgent : MonoBehaviour
+    public sealed class EnemyAttackAgent : GameListenerMono, IGameListenerTick
     {
         [SerializeField] private TeamComponent _teamComponent;
         [SerializeField] private WeaponComponent _weaponComponent;
@@ -17,7 +19,15 @@ namespace Enemy.Agents
             this.target = target;
         }
 
-        private void FixedUpdate()
+        private void Fire()
+        {
+            var startPosition = _weaponComponent.Position;
+            var vector = (Vector2) target.transform.position - startPosition;
+            var direction = vector.normalized;
+            _weaponComponent.Shoot(_teamComponent, direction);
+        }
+
+        public void GameTick(float deltaTime)
         {
             if (!this._moveAgent.IsReached)
             {
@@ -31,17 +41,8 @@ namespace Enemy.Agents
 
             if(_weaponComponent.IsCanShoot())
             {
-
                 Fire();
             }
-        }
-
-        private void Fire()
-        {
-            var startPosition = _weaponComponent.Position;
-            var vector = (Vector2) target.transform.position - startPosition;
-            var direction = vector.normalized;
-            _weaponComponent.Shoot(_teamComponent, direction);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Commands;
+using GameLoop;
 using ShootEmUp;
 using UnityEngine;
 using GameManager;
@@ -11,6 +12,7 @@ namespace Character
     public class FinishGameIfTargetDeadObserver : MonoBehaviour
     {
         [SerializeField] private HitPointsComponent _hitPointsComponent;
+        
         private void OnEnable()
         {
             _hitPointsComponent.OnIsLiveChanged += OnTargetIsDead;
@@ -23,7 +25,8 @@ namespace Character
         
         void OnTargetIsDead(GameObject _)
         {
-            new FinishGameCommand().Execute();
+            //new FinishGameCommand().Execute();
+            new SetStatusGameLoopCommand(GameLoopStatus.GameStop).Execute();
         }
     }
 }

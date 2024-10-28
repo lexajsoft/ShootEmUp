@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Common;
+using Components;
+using GameLoop;
+using GameLoop.Interfaces;
 using ShootEmUp;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Enemy
 {
-    public sealed class EnemyManager : MonoBehaviour
+    public sealed class EnemyManager : GameListenerMono, IGameListenerTick, IGameListenerStart
     {
         [SerializeField] private EnemyPool _enemyPool;
 
@@ -14,22 +18,8 @@ namespace Enemy
 
         public UnityAction<GameObject> OnEnemyWasDestroyed;
 
-        private IEnumerator Start()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(1);
-                var enemy = this._enemyPool.SpawnEnemy();
-                if (enemy != null)
-                {
-                    if (this.m_activeEnemies.Add(enemy))
-                    {
-                        AddOnEnemyEvents(enemy);
-                    }    
-                }
-            }
-        }
-
+        private Timer _timer;
+        
         private void AddOnEnemyEvents(GameObject enemyGameObject)
         {
             enemyGameObject.GetComponent<HitPointsComponent>().OnIsLiveChanged += OnEnemyDestroyed;
@@ -48,6 +38,26 @@ namespace Enemy
                 _enemyPool.UnspawnEnemy(enemy);
                 OnEnemyWasDestroyed?.Invoke(enemy);
             }
+        }
+
+        public void GameTick(float deltaTime)
+        {
+            if (_timer.UpdateAndIsChecked(deltaTime))
+            {
+                var enemy = _enemyPool.SpawnEnemy();
+                if (enemy != null)
+                {
+                    if (m_activeEnemies.Add(enemy))
+                    {
+                        AddOnEnemyEvents(enemy);
+                    }    
+                }
+            }
+        }
+
+        public void GameStart()
+        {
+            _timer = new Timer(1);
         }
     }
 }

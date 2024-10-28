@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Commands;
 using GameLoop.Interfaces;
+using Installer;
 using UnityEngine;
 
 namespace GameLoop
 {
+    [Serializable]
     public enum GameLoopStatus
     {
         None,
@@ -16,8 +20,10 @@ namespace GameLoop
         GameStop
     }
 
-    public class GameLoop : MonoBehaviour
+    public class GameLoop : MonoBehaviour, IRegistry
     {
+        [SerializeField] private GameLoopStatus _gameLoopStatus = GameLoopStatus.None;
+        
         private Dictionary<Type, List<object>> _objects;
 
         private void Awake()
@@ -30,6 +36,27 @@ namespace GameLoop
             _objects.Add(typeof(IGameListenerTick),new List<object>());
             _objects.Add(typeof(IGameListenerPause),new List<object>());
             _objects.Add(typeof(IGameListenerResume),new List<object>());
+            _objects.Add(typeof(IGameListenerNone),new List<object>());
+
+            IGameListener.OnRegistry += OnGameListenerOnRegistry;
+            IGameListener.OnUnRegistry += OnGameListenerUnOnRegistry;
+        }
+
+        private IEnumerator Start()
+        {
+            yield return null;
+            new SetStatusGameLoopCommand(GameLoopStatus.None).Execute();
+        }
+
+        private void OnGameListenerOnRegistry(object obj) => Registry(obj as IGameListener);
+        private void OnGameListenerUnOnRegistry(object obj) => Registry(obj as IGameListener);
+        
+        private void OnDestroy()
+        {
+            _objects.Clear();
+            
+            IGameListener.OnRegistry -= OnGameListenerOnRegistry;
+            IGameListener.OnUnRegistry -= OnGameListenerUnOnRegistry;
         }
 
         public void Registry(IGameListener obj)
@@ -42,6 +69,7 @@ namespace GameLoop
                 Add<IGameListenerTick>(obj);
                 Add<IGameListenerPause>(obj);
                 Add<IGameListenerResume>(obj);
+                Add<IGameListenerNone>(obj);
             }
         }
         
@@ -55,18 +83,30 @@ namespace GameLoop
                 Remove<IGameListenerTick>(obj);
                 Remove<IGameListenerPause>(obj);
                 Remove<IGameListenerResume>(obj);
+                Remove<IGameListenerNone>(obj);
             }
         }
 
-        private GameLoopStatus _gameLoopStatus = GameLoopStatus.None;
-
         public void SetStatus(GameLoopStatus gameLoopStatus)
         {
+            if(_gameLoopStatus == gameLoopStatus)
+                return;
+            
+            Debug.Log(_gameLoopStatus.ToString() +  "=>" + gameLoopStatus.ToString());
+            
             _gameLoopStatus = gameLoopStatus;
             switch (_gameLoopStatus)
             {
                 case GameLoopStatus.None:
+                {
+                    var list = _objects[typeof(IGameListenerStart)].Select(item => item as IGameListenerNone).ToList();
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        list[i].GameNone();
+                    }
+
                     break;
+                }
                 case GameLoopStatus.GameStart:
                 {
                     var list = _objects[typeof(IGameListenerStart)].Select(item => item as IGameListenerStart).ToList();
@@ -125,7 +165,7 @@ namespace GameLoop
                 _objects[type].Add(obj);
             }
         }
-
+        
         private void Remove<T>(object obj) where T : IGameListener
         {
             if (obj is T)
@@ -134,7 +174,6 @@ namespace GameLoop
                 _objects[type].Remove(obj);
             }
         }
-
 
         private void Update()
         {
@@ -146,6 +185,11 @@ namespace GameLoop
                     list[i].GameTick(Time.deltaTime);
                 }         
             }
+        }
+
+        public void Registry()
+        {
+            ServiceLocator.Registy(typeof(GameLoop), this);
         }
     }
 }

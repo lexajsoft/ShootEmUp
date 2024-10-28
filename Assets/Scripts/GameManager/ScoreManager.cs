@@ -1,5 +1,6 @@
 ﻿using System;
 using Character;
+using Installer;
 using ShootEmUp;
 using UnityEngine;
 using UnityEngine.Events;
@@ -31,7 +32,7 @@ namespace GameManager
         
         public void Registry()
         {
-            AddictionManager.Instance.Registy(typeof(IScoreManager), this);
+            ServiceLocator.Registy(typeof(IScoreManager), this);
         }
     }
 }

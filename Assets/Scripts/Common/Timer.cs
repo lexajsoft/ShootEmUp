@@ -18,7 +18,7 @@ namespace Common
             _timeWait = time;
         }
 
-        public bool UpdateAndIsCheck(float time)
+        public bool UpdateAndIsChecked(float time)
         {
             Update(time);
             return IsCheck();

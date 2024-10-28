@@ -1,12 +1,14 @@
+using Components;
+using GameLoop;
+using GameLoop.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Input
 {
-    public sealed class InputManager : MonoBehaviour
+    public sealed class InputManager : GameListenerMono, IGameListenerTick
     {
         private Vector2 _direct;
-
         public Vector2 Direct
         {
             get => _direct;
@@ -20,7 +22,7 @@ namespace Input
         public UnityAction OnShoot;
         public UnityAction<Vector2> OnHorizontalDirectionChanged;
 
-        private void Update()
+        public void GameTick(float deltaTime)
         {
             if (UnityEngine.Input.GetKey(KeyCode.Space))
             {

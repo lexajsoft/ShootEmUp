@@ -13,7 +13,7 @@ namespace Commands
 
         public override void Execute()
         {
-            AddictionManager.Instance.Get<IScoreManager>().AddScore(_addScore);
+            ServiceLocator.Get<IScoreManager>().AddScore(_addScore);
         }
     }
 }

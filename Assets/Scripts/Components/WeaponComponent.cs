@@ -1,11 +1,13 @@
 using Bullets;
 using Common;
+using GameLoop;
+using GameLoop.Interfaces;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Components
 {
-    public sealed class WeaponComponent : MonoBehaviour
+    public sealed class WeaponComponent : GameListenerMono, IGameListenerTick
     {
         [SerializeField] private float _reloadTime = 2f;
         [SerializeField] private Transform _firePoint;
@@ -13,24 +15,15 @@ namespace Components
         private IBulletSystem _bulletSystem;
         private Timer _timer;
 
-        private void Awake()
+        protected override void OnStart()
         {
             _timer = new Timer(_reloadTime);
-        }
-
-        private void Start()
-        {
-            _bulletSystem = AddictionManager.Instance.Get<IBulletSystem>();
+            _bulletSystem = ServiceLocator.Get<IBulletSystem>();
         }
 
         public Vector2 Position => _firePoint.position; 
-        public Quaternion Rotation => this._firePoint.rotation;
+        public Quaternion Rotation => _firePoint.rotation;
         public Vector3 Direct => _firePoint.up;
-
-        private void Update()
-        {
-            _timer.Update(Time.deltaTime);
-        }
 
         public bool IsCanShoot()
         {
@@ -58,6 +51,11 @@ namespace Components
                 _bulletSystem.Shoot(this,teamComponent,direct);
                 Cooldown();
             }
+        }
+
+        public void GameTick(float deltaTime)
+        {
+            _timer.Update(deltaTime);
         }
     }
 }

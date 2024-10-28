@@ -1,11 +1,12 @@
 using System;
+using GameLoop;
+using GameLoop.Interfaces;
 using UnityEngine;
 
 namespace Components
 {
-    public sealed class MoveComponent : MonoBehaviour
+    public sealed class MoveComponent : GameListenerMono, IGameListenerTick
     {
-        [SerializeField] private new Rigidbody2D _rigidbody2D;
         [SerializeField] private float _speed = 5.0f;
 
         private Vector2 _direct;
@@ -14,14 +15,11 @@ namespace Components
         public void SetDirectToMove(Vector2 vector)
         {
             _direct = vector;
-            // var nextPosition = this._rigidbody2D.position + vector * this._speed;
-            // this._rigidbody2D.MovePosition(nextPosition);
         }
 
-        private void FixedUpdate()
+        public void GameTick(float deltaTime)
         {
-            var nextPosition = this._rigidbody2D.position + _direct * Time.deltaTime * this._speed;
-            this._rigidbody2D.MovePosition(nextPosition);
+            transform.position += (Vector3)_direct * (deltaTime * _speed);
         }
     }
 }
