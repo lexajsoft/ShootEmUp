@@ -28,12 +28,6 @@ namespace UI.Screens
             _viewBase.OnPauseButtonClick += PauseButtonClick;
         }
 
-        private void PauseButtonClick()
-        {
-            new SetStatusGameLoopCommand(GameLoopStatus.GamePause).Execute();
-            
-        }
-
         public override void Describes()
         {
             _hitPointsComponent.OnHitPointsChanged -= _viewBase.SetHitPoints;
@@ -75,6 +69,12 @@ namespace UI.Screens
         public void GameResume()
         {
             _viewBase.Show();
+        }
+        
+        private void PauseButtonClick()
+        {
+            new SetStatusGameLoopCommand(GameLoopStatus.GamePause).Execute();
+            
         }
     }
 }
