@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace UI.Screens
 {
-    public class ScreenUIMediator : MediatorBase<ScreenUI>, IGameListenerStart, IGameListenerPause, IGameListenerStop, IGameListenerNone, IGameListenerResume
+    public class ScreenUIMediator : MediatorBase<ScreenUI>, IGameListenerStart, IGameListenerPause, IGameListenerStop, IGameListenerResume
     {
         private HitPointsComponent _hitPointsComponent;
         private IScoreManager _scoreManager;
@@ -67,10 +67,10 @@ namespace UI.Screens
             _viewBase.Hide();
         }
 
-        public void GameNone()
-        {
-            _viewBase.Hide();
-        }
+        // public void GameNone()
+        // {
+        //     _viewBase.Hide();
+        // }
 
         public void GameResume()
         {

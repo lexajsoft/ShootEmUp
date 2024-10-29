@@ -99,11 +99,11 @@ namespace GameLoop
             {
                 case GameLoopStatus.None:
                 {
-                    var list = _objects[typeof(IGameListenerStart)].Select(item => item as IGameListenerNone).ToList();
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        list[i].GameNone();
-                    }
+                    // var list = _objects[typeof(IGameListenerNone)].Select(item => item as IGameListenerNone).ToList();
+                    // for (int i = 0; i < list.Count; i++)
+                    // {
+                    //     list[i].GameNone();
+                    // }
 
                     break;
                 }
