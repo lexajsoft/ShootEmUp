@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace GameManager
 {
-    public sealed class GameManager : GameListenerServiceMono<IGameManager>, IGameManager, IInitGameListener, IPauseGameListener, IFinishGameListener, IResumeGameListener
+    public sealed class GameManager : GameListenerServiceMono<IGameManager>, IGameManager
     {
         // protected override void OnStart()
         // {
@@ -31,27 +31,6 @@ namespace GameManager
         {
             Debug.Log("Game over!");
             SceneManager.LoadScene(0);
-        }
-
-
-        public void GameInit()
-        {
-            
-        }
-
-        public void GamePause()
-        {
-            
-        }
-
-        public void GameFinish()
-        {
-            
-        }
-
-        public void GameResume()
-        {
-            
         }
 
         protected override void OnStart()
