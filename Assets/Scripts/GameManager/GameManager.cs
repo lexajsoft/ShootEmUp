@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace GameManager
 {
-    public sealed class GameManager : GameListenerMono , IGameManager, IRegistry, IGameListenerTick, IGameListenerStart, IGameListenerPause, IGameListenerStop, IGameListenerResume
+    public sealed class GameManager : GameListenerServiceMono<IGameManager>, IGameManager, IInitGameListener, IPauseGameListener, IFinishGameListener, IResumeGameListener
     {
         // protected override void OnStart()
         // {
@@ -33,17 +33,8 @@ namespace GameManager
             SceneManager.LoadScene(0);
         }
 
-        public void Registry()
-        {
-            ServiceLocator.Registy(typeof(IGameManager), this);
-        }
 
-        public void GameTick(float deltaTime)
-        {
-            
-        }
-
-        public void GameStart()
+        public void GameInit()
         {
             
         }
@@ -53,12 +44,17 @@ namespace GameManager
             
         }
 
-        public void GameStop()
+        public void GameFinish()
         {
             
         }
 
         public void GameResume()
+        {
+            
+        }
+
+        protected override void OnStart()
         {
             
         }

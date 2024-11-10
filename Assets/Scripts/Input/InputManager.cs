@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Input
 {
-    public sealed class InputManager : GameListenerMono, IGameListenerTick
+    public sealed class InputManager : GameListenerMono, ITickGameListener
     {
         private Vector2 _direct;
         public Vector2 Direct

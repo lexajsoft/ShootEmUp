@@ -1,37 +1,35 @@
 using System;
+using GameLoop;
+using GameLoop.Interfaces;
 using UnityEngine;
 
 namespace Level
 {
-    public sealed class LevelBackground : MonoBehaviour
+    public sealed class LevelBackground : GameListenerMono, IStartPlayGameListener ,ITickGameListener
     {
-        private float startPositionY;
-
-        private float endPositionY;
-
-        private float movingSpeedY;
-
-        private float positionX;
-
-        private float positionZ;
-
-        private Transform myTransform;
-
-        [SerializeField]
-        private Params m_params;
-
-        private void Awake()
+        [Serializable]
+        public sealed class Params
         {
-            this.startPositionY = this.m_params.m_startPositionY;
-            this.endPositionY = this.m_params.m_endPositionY;
-            this.movingSpeedY = this.m_params.m_movingSpeedY;
-            this.myTransform = this.transform;
-            var position = this.myTransform.position;
-            this.positionX = position.x;
-            this.positionZ = position.z;
+            public float m_startPositionY;
+            public float m_endPositionY;
+            public float m_movingSpeedY;
         }
 
-        private void FixedUpdate()
+        [SerializeField] private Params m_params;
+        
+        private float startPositionY;
+        private float endPositionY;
+        private float movingSpeedY;
+        private float positionX;
+        private float positionZ;
+        private Transform myTransform;
+
+
+
+        
+        
+
+        public void GameTick(float deltaTime)
         {
             if (this.myTransform.position.y <= this.endPositionY)
             {
@@ -44,22 +42,20 @@ namespace Level
 
             this.myTransform.position -= new Vector3(
                 this.positionX,
-                this.movingSpeedY * Time.fixedDeltaTime,
+                this.movingSpeedY * deltaTime,
                 this.positionZ
             );
         }
 
-        [Serializable]
-        public sealed class Params
+        public void StartPlay()
         {
-            [SerializeField]
-            public float m_startPositionY;
-
-            [SerializeField]
-            public float m_endPositionY;
-
-            [SerializeField]
-            public float m_movingSpeedY;
+            this.startPositionY = this.m_params.m_startPositionY;
+            this.endPositionY = this.m_params.m_endPositionY;
+            this.movingSpeedY = this.m_params.m_movingSpeedY;
+            this.myTransform = this.transform;
+            var position = this.myTransform.position;
+            this.positionX = position.x;
+            this.positionZ = position.z;
         }
     }
 }

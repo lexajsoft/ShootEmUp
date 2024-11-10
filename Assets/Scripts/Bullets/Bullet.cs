@@ -16,7 +16,7 @@ namespace Bullets
         public int physicsLayer;
     }
     
-    public sealed class Bullet : GameListenerMono, IGameListenerTick
+    public sealed class Bullet : GameListenerMono, ITickGameListener
     {
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private SpriteRenderer spriteRenderer;

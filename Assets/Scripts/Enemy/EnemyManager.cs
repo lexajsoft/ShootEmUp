@@ -10,7 +10,7 @@ using UnityEngine.Events;
 
 namespace Enemy
 {
-    public sealed class EnemyManager : GameListenerMono, IGameListenerTick, IGameListenerStart
+    public sealed class EnemyManager : GameListenerMono, ITickGameListener, IInitGameListener
     {
         [SerializeField] private EnemyPool _enemyPool;
 
@@ -55,7 +55,7 @@ namespace Enemy
             }
         }
 
-        public void GameStart()
+        public void GameInit()
         {
             _timer = new Timer(1);
         }

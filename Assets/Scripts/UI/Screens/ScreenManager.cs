@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace UI.Screens
 {
-    public class GameListenerScreenManager : GameListenerMono, IGameListenerStart, IGameListenerPause,IGameListenerResume, IGameListenerStop
+    public class ScreenManager : GameListenerMono, IInitGameListener, IPauseGameListener,IResumeGameListener, IFinishGameListener, IStartPlayGameListener
     {
         // активируется до начала игры
-        [SerializeField] private List<ViewBase> _screensGameNone;
+        [SerializeField] private List<ViewBase> _screensGameInit;
         // активируется во время игры
         [SerializeField] private List<ViewBase> _screensGamePlaying;
         // активируется во время паузы
@@ -21,14 +21,14 @@ namespace UI.Screens
 
         protected override void OnStart()
         {
-            SetVisibleScreens(_screensGameNone,true);
+            //SetVisibleScreens(_screensGameInit,true);
         }
 
-        public void GameStart()
+        public void GameInit()
         {
-            SetVisibleScreens(_screensGamePlaying,true);
+            SetVisibleScreens(_screensGameInit,true);
         }
-
+        
         public void GamePause()
         {
             SetVisibleScreens(_screensGamePause,true);
@@ -39,7 +39,7 @@ namespace UI.Screens
             SetVisibleScreens(_screensGamePlaying,true);
         }
 
-        public void GameStop()
+        public void GameFinish()
         {
             SetVisibleScreens(_screensGameFinish,true);
         }
@@ -63,6 +63,11 @@ namespace UI.Screens
                     screens[i].Hide();
                 }
             }
+        }
+
+        public void StartPlay()
+        {
+            SetVisibleScreens(_screensGamePlaying,true); 
         }
     }
 }

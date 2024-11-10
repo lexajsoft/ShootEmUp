@@ -12,78 +12,79 @@ namespace GameLoop
     [Serializable]
     public enum GameLoopStatus
     {
-        None,
-        GameStart,
+        GameInit,
         GamePlay,
         GamePause,
         GameResume,
-        GameStop
+        GameFinish
     }
 
-    public class GameLoop : MonoBehaviour, IRegistry
+    [DefaultExecutionOrder(-1000)]
+    public class GameLoop : ServiceMono<GameLoop>
     {
-        [SerializeField] private GameLoopStatus _gameLoopStatus = GameLoopStatus.None;
+        [SerializeField] private Installer.Installer _installer;
         
-        private Dictionary<Type, List<object>> _objects;
+        [SerializeField] private GameLoopStatus _gameLoopStatus = GameLoopStatus.GameInit;
 
-        private void Awake()
+        // порядок включения
+        // init -> (resume -> playing) -> finish
+        // init -> (resume -> playing) -> pause -> (resume -> playing)-> finish
+        
+        private List<IInitGameListener> _initGameListeners;
+        private List<IStartPlayGameListener> _startPlayGameListeners;
+        private List<IResumeGameListener> _resumeGameListeners;
+        private List<ITickGameListener> _tickGameListeners;
+        private List<IPauseGameListener> _pauseGameListeners;
+        private List<IFinishGameListener> _finishGameListeners;
+
+
+        protected override void Awake()
         {
-            _objects = new Dictionary<Type, List<object>>();
-            
-            _objects.Add(typeof(IGameListener),new List<object>());
-            _objects.Add(typeof(IGameListenerStart),new List<object>());
-            _objects.Add(typeof(IGameListenerStop),new List<object>());
-            _objects.Add(typeof(IGameListenerTick),new List<object>());
-            _objects.Add(typeof(IGameListenerPause),new List<object>());
-            _objects.Add(typeof(IGameListenerResume),new List<object>());
-            _objects.Add(typeof(IGameListenerNone),new List<object>());
+            base.Awake();
+
+            _initGameListeners = new List<IInitGameListener>();
+            _startPlayGameListeners = new List<IStartPlayGameListener>();
+            _resumeGameListeners = new List<IResumeGameListener>();
+            _tickGameListeners = new List<ITickGameListener>();
+            _pauseGameListeners = new List<IPauseGameListener>();
+            _finishGameListeners = new List<IFinishGameListener>();
 
             IGameListener.OnRegistry += OnGameListenerOnRegistry;
             IGameListener.OnUnRegistry += OnGameListenerUnOnRegistry;
+            
+            _installer.Install();
         }
 
         private IEnumerator Start()
         {
             yield return null;
-            new SetStatusGameLoopCommand(GameLoopStatus.None).Execute();
+            _gameLoopStatus = GameLoopStatus.GameInit; 
+            UpdateStatus();
         }
 
-        private void OnGameListenerOnRegistry(object obj) => Registry(obj as IGameListener);
-        private void OnGameListenerUnOnRegistry(object obj) => Registry(obj as IGameListener);
-        
-        private void OnDestroy()
+        private void OnGameListenerOnRegistry(IGameListener obj) => RegistryGameListener(obj);
+        private void OnGameListenerUnOnRegistry(IGameListener obj) => RegistryGameListener(obj);
+
+        protected override void OnDestroy()
         {
-            _objects.Clear();
-            
+            base.OnDestroy();
             IGameListener.OnRegistry -= OnGameListenerOnRegistry;
             IGameListener.OnUnRegistry -= OnGameListenerUnOnRegistry;
         }
 
-        public void Registry(IGameListener obj)
+        public void RegistryGameListener(IGameListener obj)
         {
             if (obj is not null)
             {
-                Add<IGameListener>(obj);
-                Add<IGameListenerStart>(obj);
-                Add<IGameListenerStop>(obj);
-                Add<IGameListenerTick>(obj);
-                Add<IGameListenerPause>(obj);
-                Add<IGameListenerResume>(obj);
-                Add<IGameListenerNone>(obj);
+                Add(obj);
             }
         }
         
-        public void UnRegistry(IGameListener obj)
+        public void UnRegistryGameListener(IGameListener obj)
         {
             if (obj is not null)
             {
-                Remove<IGameListener>(obj);
-                Remove<IGameListenerStart>(obj);
-                Remove<IGameListenerStop>(obj);
-                Remove<IGameListenerTick>(obj);
-                Remove<IGameListenerPause>(obj);
-                Remove<IGameListenerResume>(obj);
-                Remove<IGameListenerNone>(obj);
+                Remove(obj);
             }
         }
 
@@ -91,105 +92,171 @@ namespace GameLoop
         {
             if(_gameLoopStatus == gameLoopStatus)
                 return;
-            
-            Debug.Log(_gameLoopStatus.ToString() +  "=>" + gameLoopStatus.ToString());
-            
+#if UNITY_EDITOR
+            Debug.Log("SetStatus:" + _gameLoopStatus.ToString() +  "=>" + gameLoopStatus.ToString());
+#endif            
             _gameLoopStatus = gameLoopStatus;
+            UpdateStatus();
+            
+        }
+
+        private void UpdateStatus()
+        {
+            // убирает перевызывание одного и того же статуса
             switch (_gameLoopStatus)
             {
-                case GameLoopStatus.None:
+                case GameLoopStatus.GameInit:
                 {
-                    // var list = _objects[typeof(IGameListenerNone)].Select(item => item as IGameListenerNone).ToList();
-                    // for (int i = 0; i < list.Count; i++)
-                    // {
-                    //     list[i].GameNone();
-                    // }
-
-                    break;
-                }
-                case GameLoopStatus.GameStart:
-                {
-                    var list = _objects[typeof(IGameListenerStart)].Select(item => item as IGameListenerStart).ToList();
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        list[i].GameStart();
-                    }
-
-                    SetStatus(GameLoopStatus.GamePlay);
+                    GameInit();
                     break;
                 }
                 case GameLoopStatus.GamePlay:
                 {
+                    GamePlay();
                     break;
                 }
                 case GameLoopStatus.GamePause:
                 {
-                    var list = _objects[typeof(IGameListenerPause)].Select(item => item as IGameListenerPause).ToList();
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        list[i].GamePause();
-                    }
-
+                    GamePause();
                     break;
                 }
                 case GameLoopStatus.GameResume:
                 {
-                    var list = _objects[typeof(IGameListenerResume)].Select(item => item as IGameListenerResume)
-                        .ToList();
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        list[i].GameResume();
-                    }
-
-                    SetStatus(GameLoopStatus.GamePlay);
+                    GameResume();
                     break;
                 }
-                case GameLoopStatus.GameStop:
+                case GameLoopStatus.GameFinish:
                 {
-                    var list = _objects[typeof(IGameListenerStop)].Select(item => item as IGameListenerStop).ToList();
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        list[i].GameStop();
-                    }
-
+                    GameFinish();
                     break;
                 }
             }
         }
 
-        private void Add<T>(object obj) where T : IGameListener
+        private void GameInit()
         {
-            if (obj is T)
+            for (int i = 0; i < _initGameListeners.Count; i++)
             {
-                var type = typeof(T);
-                _objects[type].Add(obj);
+                _initGameListeners[i].GameInit();
+            }
+
+            //_gameLoopStatus = GameLoopStatus.GamePlay;
+        }
+
+        private void GameFinish()
+        {
+            for (int i = 0; i < _finishGameListeners.Count; i++)
+            {
+                _finishGameListeners[i].GameFinish();
+            }
+        }
+
+        private void GameResume()
+        {
+            for (int i = 0; i < _resumeGameListeners.Count; i++)
+            {
+                _resumeGameListeners[i].GameResume();
+            }
+
+            SetStatus(GameLoopStatus.GamePlay);
+            UpdateStatus();
+        }
+
+        private void GamePause()
+        {
+            for (int i = 0; i < _pauseGameListeners.Count; i++)
+            {
+                _pauseGameListeners[i].GamePause();
             }
         }
         
-        private void Remove<T>(object obj) where T : IGameListener
+        private void GamePlay()
         {
-            if (obj is T)
+            for (int i = 0; i < _startPlayGameListeners.Count; i++)
             {
-                var type = typeof(T);
-                _objects[type].Remove(obj);
+                _startPlayGameListeners[i].StartPlay();
+            }
+        }
+
+        private void Add(IGameListener obj)
+        {
+            if (obj is IInitGameListener initGameListener)
+            {
+                _initGameListeners.Add(initGameListener);
+            }
+
+            if (obj is IStartPlayGameListener startPlayGameListener)
+            {
+                _startPlayGameListeners.Add(startPlayGameListener);
+            }
+
+            if (obj is IFinishGameListener finishGameListener)
+            {
+                _finishGameListeners.Add(finishGameListener);
+            }
+            
+            if (obj is ITickGameListener tickGameListener)
+            {
+                _tickGameListeners.Add(tickGameListener);
+            }
+            if (obj is IPauseGameListener pauseGameListener)
+            {
+                _pauseGameListeners.Add(pauseGameListener);
+            }
+            
+            if (obj is IResumeGameListener resumeGameListener)
+            {
+                _resumeGameListeners.Add(resumeGameListener);
+            }
+        }
+        
+        private void Remove(IGameListener obj)
+        {
+            if (obj is IInitGameListener initGameListener)
+            {
+                _initGameListeners.Remove(initGameListener);
+            }
+            
+            if (obj is IStartPlayGameListener startPlayGameListener)
+            {
+                _startPlayGameListeners.Remove(startPlayGameListener);
+            }
+            
+            if (obj is IFinishGameListener finishGameListener)
+            {
+                _finishGameListeners.Remove(finishGameListener);
+            }
+            
+            if (obj is ITickGameListener tickGameListener)
+            {
+                _tickGameListeners.Remove(tickGameListener);
+            }
+            if (obj is IPauseGameListener pauseGameListener)
+            {
+                _pauseGameListeners.Remove(pauseGameListener);
+            }
+            
+            if (obj is IResumeGameListener resumeGameListener)
+            {
+                _resumeGameListeners.Remove(resumeGameListener);
             }
         }
 
         private void Update()
         {
-            if (_gameLoopStatus == GameLoopStatus.GamePlay)
-            {
-                var list = _objects[typeof(IGameListenerTick)].Select(item => item as IGameListenerTick).ToList();
-                for (int i = 0; i < list.Count; i++)
-                {
-                    list[i].GameTick(Time.deltaTime);
-                }         
-            }
+            GameTick();
         }
 
-        public void Registry()
+        private void GameTick()
         {
-            ServiceLocator.Registy(typeof(GameLoop), this);
+            if (_gameLoopStatus == GameLoopStatus.GamePlay)
+            {
+                float deltaTime = Time.deltaTime;
+                for (int i = 0; i < _tickGameListeners.Count; i++)
+                {
+                    _tickGameListeners[i].GameTick(deltaTime);
+                }
+            }
         }
     }
 }

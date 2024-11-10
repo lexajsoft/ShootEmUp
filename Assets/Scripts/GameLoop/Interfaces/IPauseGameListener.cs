@@ -1,6 +1,6 @@
 ﻿namespace GameLoop.Interfaces
 {
-    public interface IGameListenerPause : IGameListener
+    public interface IPauseGameListener : IGameListener
     {
         void GamePause();
     }

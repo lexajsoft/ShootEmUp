@@ -1,6 +1,6 @@
 ﻿namespace GameLoop.Interfaces
 {
-    public interface IGameListenerResume : IGameListener
+    public interface IResumeGameListener : IGameListener
     {
         void GameResume();
     }

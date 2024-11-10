@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyMoveAgent : GameListenerMono, IGameListenerTick
+    public sealed class EnemyMoveAgent : GameListenerMono, ITickGameListener
     {
         [SerializeField] private MoveComponent moveComponent;
         private Vector2 destination;

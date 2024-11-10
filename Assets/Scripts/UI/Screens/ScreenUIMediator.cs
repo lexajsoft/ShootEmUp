@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace UI.Screens
 {
-    public class ScreenUIMediator : MediatorBase<ScreenUI>, IGameListenerStart, IGameListenerPause, IGameListenerStop, IGameListenerResume
+    public class ScreenUIMediator : MediatorBase<ScreenUI>, IInitGameListener, IPauseGameListener, IFinishGameListener, IResumeGameListener
     {
         private HitPointsComponent _hitPointsComponent;
         private IScoreManager _scoreManager;
@@ -46,7 +46,7 @@ namespace UI.Screens
             _scoreManager = ServiceLocator.Get<IScoreManager>();
         }
 
-        public void GameStart()
+        public void GameInit()
         {
             _viewBase.Show();
         }
@@ -56,7 +56,7 @@ namespace UI.Screens
             _viewBase.Hide();   
         }
 
-        public void GameStop()
+        public void GameFinish()
         {
             _viewBase.Hide();
         }
@@ -73,7 +73,8 @@ namespace UI.Screens
         
         private void PauseButtonClick()
         {
-            new SetStatusGameLoopCommand(GameLoopStatus.GamePause).Execute();
+            // new SetStatusGameLoopCommand(GameLoopStatus.GamePause).Execute();
+            ServiceLocator.Get<GameLoop.GameLoop>().SetStatus(GameLoopStatus.GamePause);
             
         }
     }

@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace Components
 {
-    public sealed class WeaponComponent : GameListenerMono, IGameListenerTick
+    public sealed class WeaponComponent : GameListenerMono, ITickGameListener
     {
         [SerializeField] private float _reloadTime = 2f;
         [SerializeField] private Transform _firePoint;

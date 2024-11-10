@@ -1,5 +1,6 @@
 ﻿using System;
 using Character;
+using GameLoop;
 using Installer;
 using ShootEmUp;
 using UnityEngine;
@@ -7,8 +8,9 @@ using UnityEngine.Events;
 
 namespace GameManager
 {
-    public class ScoreManager : MonoBehaviour, IScoreManager,IRegistry
+    public class ScoreManager : ServiceMono<IScoreManager>, IScoreManager
     {
+        public event UnityAction<int> OnScoreChanged;
         private int _score = 0;
 
         public void SetScore(int value)
@@ -26,13 +28,6 @@ namespace GameManager
         public int GetScore()
         {
             return _score;
-        }
-
-        public event UnityAction<int> OnScoreChanged;
-        
-        public void Registry()
-        {
-            ServiceLocator.Registy(typeof(IScoreManager), this);
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Components
 {
-    public sealed class MoveComponent : GameListenerMono, IGameListenerTick
+    public sealed class MoveComponent : GameListenerMono, ITickGameListener
     {
         [SerializeField] private float _speed = 5.0f;
 

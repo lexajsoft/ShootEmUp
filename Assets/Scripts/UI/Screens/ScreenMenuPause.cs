@@ -15,7 +15,9 @@ namespace UI.Screens
             _pauseButton.onClick.AddListener(() =>
             {
                 Hide();
-                new SetStatusGameLoopCommand(GameLoopStatus.GameResume).Execute();;
+                // new SetStatusGameLoopCommand(GameLoopStatus.GameResume).Execute();
+                ServiceLocator.Get<GameLoop.GameLoop>().SetStatus(GameLoopStatus.GameResume);
+                
             });
         }
     }

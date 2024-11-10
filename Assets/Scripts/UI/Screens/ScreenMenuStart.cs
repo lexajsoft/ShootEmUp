@@ -29,7 +29,9 @@ namespace UI.Screens
             _timeRemainText.text = "Go";
             yield return new WaitForSeconds(1);
             
-            new SetStatusGameLoopCommand(GameLoopStatus.GameStart).Execute();
+            //new SetStatusGameLoopCommand(GameLoopStatus.GamePlay).Execute();
+            ServiceLocator.Get<GameLoop.GameLoop>().SetStatus(GameLoopStatus.GamePlay);
+            
             Hide();
             _startButton.gameObject.SetActive(true);
         }

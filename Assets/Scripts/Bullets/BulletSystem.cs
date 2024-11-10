@@ -12,7 +12,7 @@ using UnityEngine.Serialization;
 
 namespace Bullets
 {
-    public sealed class BulletSystem : GameListenerMono, IBulletSystem, IRegistry, IGameListenerTick
+    public sealed class BulletSystem : GameListenerServiceMono<IBulletSystem>, IBulletSystem, ITickGameListener
     {
         [SerializeField] private int _initialCount = 50;
         [SerializeField] private Transform container;

@@ -54,10 +54,39 @@ public static class ServiceLocator
 
         return false;
     }
+    
+    /// <summary>
+    /// Регистрируется тип, указывается объект, и если надо то есть возможность перезаписывать если hardRegistry - true
+    /// 
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="obj"></param>
+    /// <param name="hardRegistry"></param>
+    /// <returns></returns>
+    public static bool Registy<T>(Object obj, bool hardRegistry = true)
+    {
+        Type type = typeof(T);
+        if (_objects.ContainsKey(type) && hardRegistry)
+        {
+            UnRegistry(type);
+        }
+
+        if (_objects.ContainsKey(type) == false)
+        {
+            _objects.Add(type,obj);
+            return true;
+        }
+
+        return false;
+    }
 
     public static void UnRegistry(Type type)
     {
         _objects.Remove(type);
+    }
+    public static void UnRegistry<T>()
+    {
+        _objects.Remove(typeof(T));
     }
 
     public static void Clear()

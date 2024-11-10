@@ -8,7 +8,8 @@ namespace Installer
     {
         [SerializeField] private List<GameObject> _objectsRegistryOnAwake;
         // вызывает  объектов регистрацию, а далее регистрация у каждого объекта своя
-        protected void Awake()
+        
+        public void Install()
         {
             for (int i = 0; i < _objectsRegistryOnAwake.Count; i++)
             {

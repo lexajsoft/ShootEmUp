@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Character
 {
-    public sealed class CharacterController : GameListenerMono, ICharacterController, IRegistry, IGameListenerStart, IGameListenerStop, IGameListenerPause, IGameListenerResume
+    public sealed class CharacterController : GameListenerServiceMono<ICharacterController>, ICharacterController, IInitGameListener, IFinishGameListener, IPauseGameListener, IResumeGameListener
     {
         [SerializeField] private InputManager _inputManager;
         [SerializeField] private MoveComponent _moveComponent;
@@ -27,18 +27,16 @@ namespace Character
             return _moveComponent;
         }
 
-        public void Registry()
+        
+        
+        public void GameInit()
         {
-            ServiceLocator.Registy(typeof(ICharacterController), this);
-        }
-
-        public void GameStart()
-        {
+            //ServiceLocator.Registy(typeof(ICharacterController), this);
             _inputManager.OnHorizontalDirectionChanged += _moveComponent.SetDirectToMove;
             _inputManager.OnShoot += _shootFacade.Shoot;
         }
 
-        public void GameStop()
+        public void GameFinish()
         {
             _inputManager.OnHorizontalDirectionChanged -= _moveComponent.SetDirectToMove;
             _inputManager.OnShoot -= _shootFacade.Shoot;
@@ -54,6 +52,11 @@ namespace Character
         {
             _inputManager.OnHorizontalDirectionChanged += _moveComponent.SetDirectToMove;
             _inputManager.OnShoot += _shootFacade.Shoot;
+        }
+
+        protected override void OnStart()
+        {
+            
         }
     }
 }

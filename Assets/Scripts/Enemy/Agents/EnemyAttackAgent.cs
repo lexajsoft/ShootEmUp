@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyAttackAgent : GameListenerMono, IGameListenerTick
+    public sealed class EnemyAttackAgent : GameListenerMono, ITickGameListener
     {
         [SerializeField] private TeamComponent _teamComponent;
         [SerializeField] private WeaponComponent _weaponComponent;

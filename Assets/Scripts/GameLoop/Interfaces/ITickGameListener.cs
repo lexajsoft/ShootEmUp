@@ -1,6 +1,6 @@
 ﻿namespace GameLoop.Interfaces
 {
-    public interface IGameListenerTick : IGameListener
+    public interface ITickGameListener : IGameListener
     {
         void GameTick(float deltaTime);
     }
