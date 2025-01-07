@@ -568,6 +568,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31abfddfeed04bf88c74725ea85343b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isAutoRegistryOnAwake: 1
+  _installer: {fileID: 1199862204}
   _gameLoopStatus: 0
 --- !u!1 &230873557
 GameObject:
@@ -824,6 +826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37bd15923a144ffbab0333dc6e74e641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isAutoRegistryOnAwake: 0
   _initialCount: 50
   container: {fileID: 1831741369}
   prefab: {fileID: 201757604187811891, guid: 5fe72886874b4e445b06cf777ca4920d, type: 3}
@@ -1703,6 +1706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697fe7ba192e484db495320b9c01bcd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isAutoRegistryOnAwake: 0
 --- !u!1 &1134805359
 GameObject:
   m_ObjectHideFlags: 0
@@ -1758,7 +1762,7 @@ GameObject:
   - component: {fileID: 1199862205}
   - component: {fileID: 1199862204}
   m_Layer: 0
-  m_Name: '[BOOT_START]'
+  m_Name: '[INSTALLER]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1781,7 +1785,6 @@ MonoBehaviour:
   - {fileID: 363245575}
   - {fileID: 1114174720}
   - {fileID: 1865136564}
-  - {fileID: 203249961}
 --- !u!4 &1199862205
 Transform:
   m_ObjectHideFlags: 0
@@ -2348,7 +2351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a167901a4914b28865016ec818ac971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _screensGameNone:
+  _screensGameInit:
   - {fileID: 1489189862}
   _screensGamePlaying:
   - {fileID: 990218034}
@@ -2837,6 +2840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454d62b5f7d5449fba600896a7025a76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isAutoRegistryOnAwake: 0
 --- !u!1 &1879759788
 GameObject:
   m_ObjectHideFlags: 0
@@ -2883,6 +2887,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c57ed31af8d94ec3b11df7e2b588d40f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isAutoRegistryOnAwake: 0
   _inputManager: {fileID: 1134805361}
   _moveComponent: {fileID: 4414282821800802398}
   _hitPointsComponent: {fileID: 4414282821800802403}
