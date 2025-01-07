@@ -2,17 +2,19 @@ using System;
 using System.Collections.Generic;
 using Character;
 using Components;
+using GameLoop;
+using GameLoop.Interfaces;
+using Installer;
 using Level;
 using ShootEmUp;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Bullets
 {
-    public sealed class BulletSystem : MonoBehaviour,IBulletSystem, IRegistry
+    public sealed class BulletSystem : GameListenerServiceMono<IBulletSystem>, IBulletSystem, ITickGameListener
     {
-        [SerializeField]
-        private int initialCount = 50;
-        
+        [SerializeField] private int _initialCount = 50;
         [SerializeField] private Transform container;
         [SerializeField] private Bullet prefab;
         [SerializeField] private Transform worldTransform;
@@ -21,36 +23,10 @@ namespace Bullets
         [SerializeField] private BulletConfig _bulletConfigEnemy;
         
         
-        private readonly Queue<Bullet> m_bulletPool = new();
-        private readonly HashSet<Bullet> m_activeBullets = new();
-        private readonly List<Bullet> m_cache = new();
+        private readonly Queue<Bullet> _bulletPool = new();
+        private readonly HashSet<Bullet> _activeBullets = new();
+        private readonly List<Bullet> _cache = new();
         
-        private void Awake()
-        {
-            for (var i = 0; i < this.initialCount; i++)
-            {
-                var bullet = Instantiate(this.prefab, this.container);
-                this.m_bulletPool.Enqueue(bullet);
-            }
-
-            
-        }
-
-        private void FixedUpdate()
-        {
-            this.m_cache.Clear();
-            this.m_cache.AddRange(this.m_activeBullets);
-
-            for (int i = 0, count = this.m_cache.Count; i < count; i++)
-            {
-                var bullet = this.m_cache[i];
-                if (!this.levelBounds.InBounds(bullet.transform.position))
-                {
-                    this.RemoveBullet(bullet);
-                }
-            }
-        }
-
         public void Shoot(WeaponComponent weaponComponent,TeamComponent teamComponent)
         {
             Shoot(weaponComponent,teamComponent,weaponComponent.Direct);
@@ -81,13 +57,13 @@ namespace Bullets
 
         public void ShootByPreparedBulletData(PreparedBulletData preparedBulletData)
         {
-            if (this.m_bulletPool.TryDequeue(out var bullet))
+            if (_bulletPool.TryDequeue(out var bullet))
             {
                 bullet.transform.SetParent(this.worldTransform);
             }
             else
             {
-                bullet = Instantiate(this.prefab, this.worldTransform);
+                bullet = Instantiate(prefab, worldTransform);
             }
 
             
@@ -98,35 +74,59 @@ namespace Bullets
                 damage = preparedBulletData.damage,
                 velocity = preparedBulletData.velocity,
                 isPlayer = preparedBulletData.isPlayer,
-                physicsLayer = preparedBulletData.physicsLayer
+                physicsLayer = preparedBulletData.physicsLayer,
             });
             
-            if (this.m_activeBullets.Add(bullet))
+            if (_activeBullets.Add(bullet))
             {
-                bullet.OnCollisionEntered += this.OnBulletCollision;
+                bullet.OnCollisionEntered += OnBulletCollision;
             }
         }
         
         private void OnBulletCollision(Bullet bullet, GameObject collision)
         {
             BulletUtils.DealDamage(bullet, collision.gameObject);
-            this.RemoveBullet(bullet);
+            RemoveBullet(bullet);
         }
 
         private void RemoveBullet(Bullet bullet)
         {
-            if (this.m_activeBullets.Remove(bullet))
+            if (_activeBullets.Remove(bullet))
             {
-                bullet.OnCollisionEntered -= this.OnBulletCollision;
-                bullet.transform.SetParent(this.container);
-                this.m_bulletPool.Enqueue(bullet);
+                bullet.OnCollisionEntered -= OnBulletCollision;
+                bullet.transform.SetParent(container);
+                _bulletPool.Enqueue(bullet);
             }
         }
 
 
         public void Registry()
         {
-            AddictionManager.Instance.Registy(typeof(IBulletSystem), this);
+            ServiceLocator.Registy(typeof(IBulletSystem), this);
+        }
+
+        public void GameTick(float deltaTime)
+        {
+            _cache.Clear();
+            _cache.AddRange(_activeBullets);
+
+            for (int i = 0, count = _cache.Count; i < count; i++)
+            {
+                var bullet = _cache[i];
+                if (!levelBounds.InBounds(bullet.transform.position))
+                {
+                    RemoveBullet(bullet);
+                }
+            }
+        }
+
+        protected override void OnStart()
+        {
+            for (var i = 0; i < _initialCount; i++)
+            {
+                var bullet = Instantiate(prefab, container);
+                _bulletPool.Enqueue(bullet);
+            }
         }
     }
 }

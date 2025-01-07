@@ -11,7 +11,7 @@ namespace Commands
 
         public override void Execute()
         {
-            AddictionManager.Instance.Get<IGameManager>()?.FinishGame();            
+            ServiceLocator.Get<IGameManager>()?.FinishGame();
         }
     }
 }

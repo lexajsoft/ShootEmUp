@@ -1,4 +1,7 @@
 using System;
+using Components;
+using GameLoop;
+using GameLoop.Interfaces;
 using UnityEngine;
 
 namespace Bullets
@@ -13,10 +16,12 @@ namespace Bullets
         public int physicsLayer;
     }
     
-    public sealed class Bullet : MonoBehaviour
+    public sealed class Bullet : GameListenerMono, ITickGameListener
     {
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private SpriteRenderer spriteRenderer;
+        private Vector2 _direct;
+
 
         public BulletData BulletData { get; private set; }
 
@@ -30,6 +35,7 @@ namespace Bullets
         public void SetData(BulletData data)
         {
             BulletData = data;
+            
             SetVelocity(BulletData.velocity);
             SetColor(BulletData.color);
             SetPosition(BulletData.position);
@@ -38,7 +44,7 @@ namespace Bullets
 
         public void SetVelocity(Vector2 velocity)
         {
-            _rigidbody2D.velocity = velocity;
+            _direct = velocity;
         }
 
         public void SetPhysicsLayer(int physicsLayer)
@@ -54,6 +60,12 @@ namespace Bullets
         public void SetColor(Color color)
         {
             spriteRenderer.color = color;
+        }
+
+        public void GameTick(float deltaTime)
+        {
+            if(gameObject.activeSelf)
+                transform.position += (Vector3)_direct*  deltaTime;
         }
     }
 }
