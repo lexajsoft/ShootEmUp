@@ -18,12 +18,7 @@ namespace UI.Screens
         [SerializeField] private List<ViewBase> _screensGameFinish;
 
         private List<ViewBase> _lastShowedScreens = null;
-
-        protected override void OnStart()
-        {
-            //SetVisibleScreens(_screensGameInit,true);
-        }
-
+        
         public void GameInit()
         {
             SetVisibleScreens(_screensGameInit,true);

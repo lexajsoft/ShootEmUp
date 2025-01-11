@@ -2,7 +2,8 @@
 using GameLoop;
 using ShootEmUp;
 using UnityEngine;
-using GameManager;
+using GameManagers;
+using Zenject;
 
 namespace Character
 {
@@ -12,6 +13,13 @@ namespace Character
     public class FinishGameObserver : MonoBehaviour
     {
         [SerializeField] private HitPointsComponent _hitPointsComponent;
+        private MainGameLoop _mainGameLoop;
+
+        [Inject]
+        public void Construct(GameLoop.MainGameLoop mainGameLoop)
+        {
+            _mainGameLoop = mainGameLoop;
+        }
         
         private void OnEnable()
         {
@@ -27,7 +35,7 @@ namespace Character
         {
             // new FinishGameCommand().Execute();
             // new SetStatusGameLoopCommand(GameLoopStatus.GameFinish).Execute();
-            ServiceLocator.Get<GameLoop.GameLoop>().SetStatus(GameLoopStatus.GameFinish);
+            _mainGameLoop.SetStatus(GameLoopStatus.GameFinish);
         }
     }
 }

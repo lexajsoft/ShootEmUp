@@ -2,17 +2,48 @@
 using Commands;
 using GameLoop;
 using GameLoop.Interfaces;
-using GameManager;
+using GameManagers;
 using ShootEmUp;
 using UnityEngine.UI;
+using Zenject;
 
 namespace UI.Screens
 {
     public class ScreenUIMediator : MediatorBase<ScreenUI>, IInitGameListener, IPauseGameListener, IFinishGameListener, IResumeGameListener
     {
         private HitPointsComponent _hitPointsComponent;
+
         private IScoreManager _scoreManager;
+        private MainGameLoop _mainGameLoop;
+        private IPlayerController _playerController;
         
+        private DiContainer _container;
+        
+        [Inject]
+        public void Constructor(MainGameLoop mainGameLoop, IScoreManager scoreManager, IPlayerController playerController)
+        {
+            _mainGameLoop = mainGameLoop;
+            _scoreManager = scoreManager;
+            _playerController = playerController;
+        }
+        
+        
+        // [Inject]
+        // public void Construct(Zenject.Context context)
+        // {
+        //     _container = context.Container;
+        //     // _mainGameLoop = mainGameLoop;
+        //     // _scoreManager = scoreManager;
+        //     // _playerController = playerController;
+        // }
+
+        // private void Resolve()
+        // {
+        //     _mainGameLoop = _container.Resolve<MainGameLoop>();
+        //     _scoreManager = _container.Resolve<IScoreManager>();
+        //     _playerController = _container.Resolve<IPlayerController>();
+        // }
+
         public override void Notify()
         {
             _viewBase.SetHitPoints(_hitPointsComponent.GetHitPoints());
@@ -42,8 +73,8 @@ namespace UI.Screens
 
         protected override void Enable()
         {
-            _hitPointsComponent = ServiceLocator.Get<ICharacterController>().GetHitPointsComponent();
-            _scoreManager = ServiceLocator.Get<IScoreManager>();
+            //Resolve();
+            _hitPointsComponent =_playerController.GetHitPointsComponent();
         }
 
         public void GameInit()
@@ -74,7 +105,7 @@ namespace UI.Screens
         private void PauseButtonClick()
         {
             // new SetStatusGameLoopCommand(GameLoopStatus.GamePause).Execute();
-            ServiceLocator.Get<GameLoop.GameLoop>().SetStatus(GameLoopStatus.GamePause);
+            _mainGameLoop.SetStatus(GameLoopStatus.GamePause);
             
         }
     }

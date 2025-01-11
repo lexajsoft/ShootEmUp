@@ -9,10 +9,11 @@ using Level;
 using ShootEmUp;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Bullets
 {
-    public sealed class BulletSystem : GameListenerServiceMono<IBulletSystem>, IBulletSystem, ITickGameListener
+    public sealed class BulletSystem : MonoBehaviour, IBulletSystem, ITickGameListener, IInitializable, IDisposable
     {
         [SerializeField] private int _initialCount = 50;
         [SerializeField] private Transform container;
@@ -63,7 +64,7 @@ namespace Bullets
             }
             else
             {
-                bullet = Instantiate(prefab, worldTransform);
+                bullet = GameObject.Instantiate(prefab, worldTransform);
             }
 
             
@@ -99,12 +100,6 @@ namespace Bullets
             }
         }
 
-
-        public void Registry()
-        {
-            ServiceLocator.Registy(typeof(IBulletSystem), this);
-        }
-
         public void GameTick(float deltaTime)
         {
             _cache.Clear();
@@ -120,13 +115,23 @@ namespace Bullets
             }
         }
 
-        protected override void OnStart()
+        protected void Start()
         {
             for (var i = 0; i < _initialCount; i++)
             {
                 var bullet = Instantiate(prefab, container);
                 _bulletPool.Enqueue(bullet);
             }
+        }
+
+        void  IInitializable.Initialize()
+        {
+            IGameListener.OnRegistry.Invoke(this);    
+        }
+
+        void IDisposable.Dispose()
+        {
+            IGameListener.OnUnRegistry.Invoke(this);
         }
     }
 }

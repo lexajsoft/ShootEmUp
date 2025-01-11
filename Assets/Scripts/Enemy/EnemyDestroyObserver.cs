@@ -22,7 +22,9 @@ namespace Enemy
             // как вариант можно было бы создать еще ScoreComponent который потом просто закидывался бы противника
             // и когда он умирает мы могли бы запрашивать у него этот компонент и далее забирать значение и передовать в команду
             // на передачу очков
-            new AddScoreCommand(25).Execute();
+            
+            AddScoreCommand.AddScoreCommandFactory.Create(25).Execute();
+            //new AddScoreCommand(25).Execute();
         }
     }
 }

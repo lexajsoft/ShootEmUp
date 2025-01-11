@@ -29,12 +29,12 @@ namespace Enemy.Agents
 
         public void GameTick(float deltaTime)
         {
-            if (!this._moveAgent.IsReached)
+            if (!_moveAgent.IsReached)
             {
                 return;
             }
             
-            if (!this.target.GetComponent<HitPointsComponent>().IsLive())
+            if (!target.GetComponent<HitPointsComponent>().IsLive())
             {
                 return;
             }

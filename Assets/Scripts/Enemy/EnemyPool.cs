@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Enemy.Agents;
 using ShootEmUp;
 using UnityEngine;
+using Zenject;
 
 namespace Enemy
 {
@@ -16,15 +17,28 @@ namespace Enemy
         [SerializeField] private GameObject prefab;
 
         private readonly Queue<GameObject> enemyPool = new();
+        private DiContainer _diContainer; 
         
-        private void Awake()
+        [Inject]
+        public void Construct(DiContainer diContainer)
         {
+            _diContainer = diContainer;
+
             for (var i = 0; i < 7; i++)
             {
-                var enemy = Instantiate(this.prefab, this.container);
+                var enemy = _diContainer.InstantiatePrefab(prefab, container);
                 enemyPool.Enqueue(enemy);
             }
         }
+
+        // private void Start()
+        // {
+        //     for (var i = 0; i < 7; i++)
+        //     {
+        //         var enemy = _diContainer.InstantiatePrefab(prefab, container);
+        //         enemyPool.Enqueue(enemy);
+        //     }
+        // }
 
         public GameObject SpawnEnemy()
         {
@@ -42,6 +56,7 @@ namespace Enemy
             enemy.GetComponent<EnemyMoveAgent>().SetDestination(attackPosition.position);
 
             enemy.GetComponent<EnemyAttackAgent>().SetTarget(character);
+
             return enemy;
         }
 

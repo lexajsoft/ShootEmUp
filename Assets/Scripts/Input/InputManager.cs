@@ -1,12 +1,12 @@
-using Components;
-using GameLoop;
+using System;
 using GameLoop.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 namespace Input
 {
-    public sealed class InputManager : GameListenerMono, ITickGameListener
+    public sealed class InputManager : ITickGameListener, IInitializable, IDisposable
     {
         private Vector2 _direct;
         public Vector2 Direct
@@ -15,14 +15,19 @@ namespace Input
             set
             {
                 _direct = value;
-                OnHorizontalDirectionChanged?.Invoke(value);
+                OnDirectionChanged?.Invoke(value);
             }
         }
 
         public UnityAction OnShoot;
-        public UnityAction<Vector2> OnHorizontalDirectionChanged;
+        public UnityAction<Vector2> OnDirectionChanged;
 
-        public void GameTick(float deltaTime)
+        public InputManager()
+        {
+            Debug.Log("InputManager Created");
+        }
+
+        void ITickGameListener.GameTick(float deltaTime)
         {
             if (UnityEngine.Input.GetKey(KeyCode.Space))
             {
@@ -55,7 +60,17 @@ namespace Input
                 this._direct.y = 0;
             }
             
-            OnHorizontalDirectionChanged?.Invoke(_direct);
+            OnDirectionChanged?.Invoke(_direct);
+        }
+
+        void IInitializable.Initialize()
+        {
+            IGameListener.OnRegistry?.Invoke(this);
+        }
+        
+        void IDisposable.Dispose()
+        {
+            IGameListener.OnUnRegistry?.Invoke(this);
         }
     }
 }

@@ -4,6 +4,7 @@ using GameLoop;
 using GameLoop.Interfaces;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Zenject;
 
 namespace Components
 {
@@ -15,10 +16,15 @@ namespace Components
         private IBulletSystem _bulletSystem;
         private Timer _timer;
 
+        [Inject]
+        public void Construct(IBulletSystem bulletSystem)
+        {
+            _bulletSystem = bulletSystem;
+        }
+
         protected override void OnStart()
         {
             _timer = new Timer(_reloadTime);
-            _bulletSystem = ServiceLocator.Get<IBulletSystem>();
         }
 
         public Vector2 Position => _firePoint.position; 

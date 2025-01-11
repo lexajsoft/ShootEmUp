@@ -16,7 +16,8 @@ namespace UI.Screens
             _repeatButton.onClick.AddListener(() =>
             {
                 Hide();
-                new FinishGameCommand().Execute();
+                
+                FinishGameCommand.FinishGameCommandFactory.Create().Execute();
             });
         }
     }

@@ -3,6 +3,7 @@ using Commands;
 using GameLoop;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace UI.Screens
 {
@@ -10,6 +11,15 @@ namespace UI.Screens
     {
         [SerializeField] private Button _startButton;
         [SerializeField] private TMPro.TextMeshProUGUI _timeRemainText;
+        
+        private MainGameLoop _mainGameLoop;
+
+        [Inject]
+        public void Construct(MainGameLoop mainGameLoop)
+        {
+            _mainGameLoop = mainGameLoop;
+        }
+        
         private void Start()
         {
             _startButton.onClick.AddListener(() =>
@@ -18,6 +28,8 @@ namespace UI.Screens
             });
         }
 
+        
+        
         private IEnumerator WaitAndStart()
         {
             _startButton.gameObject.SetActive(false);
@@ -30,7 +42,7 @@ namespace UI.Screens
             yield return new WaitForSeconds(1);
             
             //new SetStatusGameLoopCommand(GameLoopStatus.GamePlay).Execute();
-            ServiceLocator.Get<GameLoop.GameLoop>().SetStatus(GameLoopStatus.GamePlay);
+            _mainGameLoop.SetStatus(GameLoopStatus.GamePlay);
             
             Hide();
             _startButton.gameObject.SetActive(true);

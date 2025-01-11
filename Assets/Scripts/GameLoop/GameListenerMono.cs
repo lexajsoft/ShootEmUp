@@ -12,12 +12,14 @@ namespace GameLoop
 
         protected void Start()
         {
+            Debug.Log("I Want Registry:" + this.GetType().Name);
             IGameListener.OnRegistry?.Invoke(this);
             OnStart();
         }
 
         protected void OnDestroy()
         {
+            Debug.Log("I Want Destroy self:" + this.GetType().Name);
             IGameListener.OnUnRegistry?.Invoke(this);
         }
     }
