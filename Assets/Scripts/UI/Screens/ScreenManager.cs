@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Components;
 using GameLoop;
 using GameLoop.Interfaces;
 using UnityEngine;
+using Zenject;
 
 namespace UI.Screens
 {
-    public class ScreenManager : GameListenerMono, IInitGameListener, IPauseGameListener,IResumeGameListener, IFinishGameListener, IStartPlayGameListener
+    public class ScreenManager : MonoBehaviour, IInitializable,  IInitGameListener, IPauseGameListener,IResumeGameListener, IFinishGameListener, IStartPlayGameListener
     {
+        [Inject] [SerializeField] private MainGameLoop _mainGameLoop;
+        
         // активируется до начала игры
         [SerializeField] private List<ViewBase> _screensGameInit;
         // активируется во время игры
@@ -63,6 +67,16 @@ namespace UI.Screens
         public void StartPlay()
         {
             SetVisibleScreens(_screensGamePlaying,true); 
+        }
+
+        public void Initialize()
+        {
+            _mainGameLoop.Add(this);
+        }
+
+        public void OnDestroy()
+        {
+            _mainGameLoop.Remove(this);
         }
     }
 }

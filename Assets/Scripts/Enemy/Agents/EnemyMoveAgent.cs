@@ -2,21 +2,26 @@ using Components;
 using GameLoop;
 using GameLoop.Interfaces;
 using UnityEngine;
+using Zenject;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyMoveAgent : GameListenerMono, ITickGameListener
+    public sealed class EnemyMoveAgent : MonoBehaviour, ITickGameListener
     {
-        [SerializeField] private MoveComponent moveComponent;
+        [Inject]
+        [SerializeField]
+        public MainGameLoop _mainGameLoop;
+        
+        [SerializeField] 
+        private MoveComponent moveComponent;
+        
         private Vector2 destination;
         private bool isReached;
-        
+
         public bool IsReached
         {
             get { return isReached; }
         }
-
-
 
         public void SetDestination(Vector2 endPoint)
         {
@@ -29,6 +34,7 @@ namespace Enemy.Agents
             if (isReached)
             {
                 moveComponent.SetDirectToMove(Vector2.zero);
+                moveComponent.GameTick(deltaTime);
                 return;
             }
             
@@ -41,6 +47,7 @@ namespace Enemy.Agents
 
             var direction = vector.normalized;
             moveComponent.SetDirectToMove(direction);
+            moveComponent.GameTick(deltaTime);
         }
     }
 }

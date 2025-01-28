@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Enemy.Agents;
+using GameLoop;
 using ShootEmUp;
 using UnityEngine;
 using Zenject;
@@ -31,15 +32,6 @@ namespace Enemy
             }
         }
 
-        // private void Start()
-        // {
-        //     for (var i = 0; i < 7; i++)
-        //     {
-        //         var enemy = _diContainer.InstantiatePrefab(prefab, container);
-        //         enemyPool.Enqueue(enemy);
-        //     }
-        // }
-
         public GameObject SpawnEnemy()
         {
             if (!enemyPool.TryDequeue(out var enemy))
@@ -54,9 +46,8 @@ namespace Enemy
             
             var attackPosition = enemyPositions.RandomAttackPosition();
             enemy.GetComponent<EnemyMoveAgent>().SetDestination(attackPosition.position);
-
             enemy.GetComponent<EnemyAttackAgent>().SetTarget(character);
-
+            
             return enemy;
         }
 

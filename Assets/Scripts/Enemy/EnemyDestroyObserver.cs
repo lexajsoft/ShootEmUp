@@ -1,30 +1,37 @@
-﻿using Commands;
+﻿using System;
+using Commands;
+using GameManagers;
 using UnityEngine;
+using Zenject;
 
 namespace Enemy
 {
-    public class EnemyDestroyObserver : MonoBehaviour
+    // Убран монобех
+    // теперь устанавливается в инсталере
+    public class EnemyDestroyObserver : IInitializable, IDisposable
     {
-        [SerializeField] private EnemyManager _enemyManager;
+        private EnemyManager _enemyManager;
+        private IScoreManager _scoreManager;
 
-        private void OnEnable()
+        public EnemyDestroyObserver(EnemyManager enemyManager, IScoreManager scoreManager)
         {
-            _enemyManager.OnEnemyWasDestroyed += OnEnemyWasDestroyed;
-        }
-        
-        private void OnDisable()
-        {
-            _enemyManager.OnEnemyWasDestroyed -= OnEnemyWasDestroyed;
+            _enemyManager = enemyManager;
+            _scoreManager = scoreManager;
         }
 
         private void OnEnemyWasDestroyed(GameObject obj)
         {
-            // как вариант можно было бы создать еще ScoreComponent который потом просто закидывался бы противника
-            // и когда он умирает мы могли бы запрашивать у него этот компонент и далее забирать значение и передовать в команду
-            // на передачу очков
-            
-            AddScoreCommand.AddScoreCommandFactory.Create(25).Execute();
-            //new AddScoreCommand(25).Execute();
+            _scoreManager.AddScore(25);
+        }
+
+        void IInitializable.Initialize()
+        {
+            _enemyManager.OnEnemyWasDestroyed += OnEnemyWasDestroyed;
+        }
+
+        void IDisposable.Dispose()
+        {
+            _enemyManager.OnEnemyWasDestroyed -= OnEnemyWasDestroyed;
         }
     }
 }

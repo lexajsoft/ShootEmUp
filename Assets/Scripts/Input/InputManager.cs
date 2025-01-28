@@ -1,4 +1,5 @@
 using System;
+using GameLoop;
 using GameLoop.Interfaces;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,6 +9,9 @@ namespace Input
 {
     public sealed class InputManager : ITickGameListener, IInitializable, IDisposable
     {
+        private MainGameLoop _mainGameLoop;
+        
+        
         private Vector2 _direct;
         public Vector2 Direct
         {
@@ -22,6 +26,12 @@ namespace Input
         public UnityAction OnShoot;
         public UnityAction<Vector2> OnDirectionChanged;
 
+        [Inject]
+        public void Construct(MainGameLoop mainGameLoop)
+        {
+            _mainGameLoop = mainGameLoop;
+        }
+        
         public InputManager()
         {
             Debug.Log("InputManager Created");
@@ -65,12 +75,14 @@ namespace Input
 
         void IInitializable.Initialize()
         {
-            IGameListener.OnRegistry?.Invoke(this);
+            _mainGameLoop.Add(this);
+            //IGameListener.OnRegistry?.Invoke(this);
         }
         
         void IDisposable.Dispose()
         {
-            IGameListener.OnUnRegistry?.Invoke(this);
+            _mainGameLoop.Remove(this);
+            //IGameListener.OnUnRegistry?.Invoke(this);
         }
     }
 }

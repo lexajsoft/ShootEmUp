@@ -779,6 +779,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37bd15923a144ffbab0333dc6e74e641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mainGameLoop:
+    _gameLoopStatus: 0
   _initialCount: 50
   container: {fileID: 1831741369}
   prefab: {fileID: 201757604187811891, guid: 5fe72886874b4e445b06cf777ca4920d, type: 3}
@@ -882,7 +884,6 @@ GameObject:
   - component: {fileID: 562298204}
   - component: {fileID: 562298207}
   - component: {fileID: 562298205}
-  - component: {fileID: 562298208}
   m_Layer: 0
   m_Name: EnemySystem
   m_TagString: Untagged
@@ -936,19 +937,6 @@ MonoBehaviour:
   worldTransform: {fileID: 1683128698}
   container: {fileID: 178513672}
   prefab: {fileID: 559606060570185700, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
---- !u!114 &562298208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 562298203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad152c5472c24dd28b17d7f4f596b77a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enemyManager: {fileID: 562298205}
 --- !u!1 &598892170
 GameObject:
   m_ObjectHideFlags: 0
@@ -1671,7 +1659,7 @@ GameObject:
   - component: {fileID: 1199862205}
   - component: {fileID: 1199862204}
   m_Layer: 0
-  m_Name: Installer
+  m_Name: SceneInstaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1693,6 +1681,8 @@ MonoBehaviour:
   playerController: {fileID: 1879759793}
   _screenManager: {fileID: 1473891272}
   _enemyPool: {fileID: 562298207}
+  _enemyManager: {fileID: 562298205}
+  _levelBackground: {fileID: 4852396043583267082}
 --- !u!4 &1199862205
 Transform:
   m_ObjectHideFlags: 0
@@ -2259,6 +2249,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a167901a4914b28865016ec818ac971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mainGameLoop:
+    _gameLoopStatus: 0
   _screensGameInit:
   - {fileID: 1489189862}
   _screensGamePlaying:

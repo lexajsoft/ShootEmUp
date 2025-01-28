@@ -15,6 +15,8 @@ namespace Bullets
 {
     public sealed class BulletSystem : MonoBehaviour, IBulletSystem, ITickGameListener, IInitializable, IDisposable
     {
+        [SerializeField] private MainGameLoop _mainGameLoop;
+        
         [SerializeField] private int _initialCount = 50;
         [SerializeField] private Transform container;
         [SerializeField] private Bullet prefab;
@@ -27,7 +29,14 @@ namespace Bullets
         private readonly Queue<Bullet> _bulletPool = new();
         private readonly HashSet<Bullet> _activeBullets = new();
         private readonly List<Bullet> _cache = new();
-        
+
+        [Inject]
+        public void Construct(MainGameLoop mainGameLoop)
+        {
+            Debug.Log("BulletSystem.Construct");
+            _mainGameLoop = mainGameLoop;
+        }
+
         public void Shoot(WeaponComponent weaponComponent,TeamComponent teamComponent)
         {
             Shoot(weaponComponent,teamComponent,weaponComponent.Direct);
@@ -108,6 +117,7 @@ namespace Bullets
             for (int i = 0, count = _cache.Count; i < count; i++)
             {
                 var bullet = _cache[i];
+                bullet.GameTick(deltaTime);
                 if (!levelBounds.InBounds(bullet.transform.position))
                 {
                     RemoveBullet(bullet);
@@ -115,7 +125,7 @@ namespace Bullets
             }
         }
 
-        protected void Start()
+        private void Start()
         {
             for (var i = 0; i < _initialCount; i++)
             {
@@ -126,12 +136,15 @@ namespace Bullets
 
         void  IInitializable.Initialize()
         {
-            IGameListener.OnRegistry.Invoke(this);    
+            Debug.Log("BulletSystem.Initialize");
+            _mainGameLoop.Add(this);
+            //IGameListener.OnRegistry.Invoke(this);    
         }
 
         void IDisposable.Dispose()
         {
-            IGameListener.OnUnRegistry.Invoke(this);
+            _mainGameLoop.Remove(this);
+            //IGameListener.OnUnRegistry.Invoke(this);
         }
     }
 }

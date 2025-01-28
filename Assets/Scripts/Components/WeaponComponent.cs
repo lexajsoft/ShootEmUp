@@ -8,28 +8,27 @@ using Zenject;
 
 namespace Components
 {
-    public sealed class WeaponComponent : GameListenerMono, ITickGameListener
+    public sealed class WeaponComponent : MonoBehaviour, ITickGameListener
     {
         [SerializeField] private float _reloadTime = 2f;
         [SerializeField] private Transform _firePoint;
         
         private IBulletSystem _bulletSystem;
         private Timer _timer;
+        public Vector2 Position => _firePoint.position; 
+        public Quaternion Rotation => _firePoint.rotation;
+        public Vector3 Direct => _firePoint.up;
 
-        [Inject]
-        public void Construct(IBulletSystem bulletSystem)
-        {
-            _bulletSystem = bulletSystem;
-        }
-
-        protected override void OnStart()
+        
+        private void Start()
         {
             _timer = new Timer(_reloadTime);
         }
 
-        public Vector2 Position => _firePoint.position; 
-        public Quaternion Rotation => _firePoint.rotation;
-        public Vector3 Direct => _firePoint.up;
+        public void SetBulletSystem(IBulletSystem bulletSystem)
+        {
+            _bulletSystem = bulletSystem;
+        }
 
         public bool IsCanShoot()
         {

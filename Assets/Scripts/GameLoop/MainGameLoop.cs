@@ -24,9 +24,10 @@ namespace GameLoop
     // IInitializable - убран отсюда так как начинает конфликтовать во время биндинга,
     // ибо инициализация должна быть после всех подписок,
     // а она вызывается в самом начале и в итоге ничего не работает =(
-    public class MainGameLoop : ITickable, IDisposable //: ServiceMono<GameLoop>
+    [Serializable]
+    public class MainGameLoop : IInitializable, ITickable, IDisposable //: ServiceMono<GameLoop>
     {
-        private GameLoopStatus _gameLoopStatus = GameLoopStatus.GameInit;
+        [SerializeField] private GameLoopStatus _gameLoopStatus = GameLoopStatus.GameInit;
 
         // порядок включения
         // init -> (resume -> playing) -> finish
@@ -43,7 +44,7 @@ namespace GameLoop
         
         public MainGameLoop()
         {
-            Debug.Log($"[{this.GetType().Name}]:" + " Constructor:" + countCreated++.ToString());
+            //Debug.Log($"[{this.GetType().Name}]:" + " Constructor:" + countCreated++.ToString());
             
             _initGameListeners = new List<IInitGameListener>();
             _startPlayGameListeners = new List<IStartPlayGameListener>();
@@ -52,11 +53,11 @@ namespace GameLoop
             _pauseGameListeners = new List<IPauseGameListener>();
             _finishGameListeners = new List<IFinishGameListener>();
             
-            IGameListener.OnRegistry += OnGameListenerOnRegistry;
-            IGameListener.OnUnRegistry += OnGameListenerUnOnRegistry;
+            // IGameListener.OnRegistry += OnGameListenerOnRegistry;
+            // IGameListener.OnUnRegistry += OnGameListenerUnOnRegistry;
         }
 
-        private void InitGame()
+        public void InitGame()
         {
             Debug.Log($"[{this.GetType().Name}]:" + nameof(InitGame));
             
@@ -72,8 +73,8 @@ namespace GameLoop
         {
             Debug.Log($"[{this.GetType().Name}]:" + nameof(DeInitGame));
             //base.OnDestroy();
-            IGameListener.OnRegistry -= OnGameListenerOnRegistry;
-            IGameListener.OnUnRegistry -= OnGameListenerUnOnRegistry;
+            // IGameListener.OnRegistry -= OnGameListenerOnRegistry;
+            // IGameListener.OnUnRegistry -= OnGameListenerUnOnRegistry;
         }
 
         public void RegistryGameListener(IGameListener obj)
@@ -191,8 +192,9 @@ namespace GameLoop
             }
         }
 
-        private void Add(IGameListener obj)
+        public void Add(IGameListener obj)
         {
+            Debug.Log("Registry:" + obj.GetType().Name);
             if (obj is IInitGameListener initGameListener)
             {
                 _initGameListeners.Add(initGameListener);
@@ -223,7 +225,7 @@ namespace GameLoop
             }
         }
         
-        private void Remove(IGameListener obj)
+        public void Remove(IGameListener obj)
         {
             if (obj is IInitGameListener initGameListener)
             {
@@ -255,11 +257,6 @@ namespace GameLoop
             }
         }
 
-        // private void Update()
-        // {
-        //     GameTick();
-        // }
-
         private void GameTick()
         {
             //Debug.Log($"[{this.GetType().Name}]:" + nameof(GameTick));
@@ -279,9 +276,9 @@ namespace GameLoop
             GameTick();
         }
 
-        public void Initialize()
+        void IInitializable.Initialize()
         {
-            Debug.Log($"[{this.GetType().Name}]:" + nameof(Initialize));
+            Debug.Log($"[{this.GetType().Name}]:" + nameof(IInitializable.Initialize));
             InitGame();
         }
 

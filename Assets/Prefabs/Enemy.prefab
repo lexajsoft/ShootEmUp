@@ -155,7 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce88fee201654f6e8064002ed15de594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rigidbody2D: {fileID: 659620479434099170}
   _speed: 5
 --- !u!114 &5568771391735819373
 MonoBehaviour:
@@ -196,6 +195,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bdb5771141e4cf18c434a69ec116e09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mainGameLoop:
+    _gameLoopStatus: 0
   moveComponent: {fileID: 5568771391735819372}
 --- !u!114 &6896809305229427933
 MonoBehaviour:

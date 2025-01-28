@@ -1,12 +1,14 @@
+using Bullets;
 using Components;
 using GameLoop;
 using GameLoop.Interfaces;
 using ShootEmUp;
 using UnityEngine;
+using Zenject;
 
 namespace Enemy.Agents
 {
-    public sealed class EnemyAttackAgent : GameListenerMono, ITickGameListener
+    public sealed class EnemyAttackAgent : MonoBehaviour, ITickGameListener
     {
         [SerializeField] private TeamComponent _teamComponent;
         [SerializeField] private WeaponComponent _weaponComponent;
@@ -19,6 +21,8 @@ namespace Enemy.Agents
             this.target = target;
         }
 
+        
+        
         private void Fire()
         {
             var startPosition = _weaponComponent.Position;
@@ -39,10 +43,17 @@ namespace Enemy.Agents
                 return;
             }
 
+            _weaponComponent.GameTick(deltaTime);
+            
             if(_weaponComponent.IsCanShoot())
             {
                 Fire();
             }
+        }
+
+        public void SetBulletSystem(IBulletSystem bulletSystem)
+        {
+            _weaponComponent.SetBulletSystem(bulletSystem);
         }
     }
 }

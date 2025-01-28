@@ -33,8 +33,6 @@ namespace Character
         
         void OnTargetIsDead(GameObject _)
         {
-            // new FinishGameCommand().Execute();
-            // new SetStatusGameLoopCommand(GameLoopStatus.GameFinish).Execute();
             _mainGameLoop.SetStatus(GameLoopStatus.GameFinish);
         }
     }

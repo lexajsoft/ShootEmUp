@@ -5,13 +5,12 @@ using UnityEngine;
 
 namespace Components
 {
-    public sealed class MoveComponent : GameListenerMono, ITickGameListener
+    public sealed class MoveComponent : MonoBehaviour
     {
         [SerializeField] private float _speed = 5.0f;
 
         private Vector2 _direct;
-        
-        
+
         public void SetDirectToMove(Vector2 vector)
         {
             _direct = vector;

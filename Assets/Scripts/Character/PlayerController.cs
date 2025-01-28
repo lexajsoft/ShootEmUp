@@ -1,4 +1,5 @@
 using System;
+using Bullets;
 using Components;
 using Facades;
 using GameLoop;
@@ -12,9 +13,11 @@ using Zenject;
 namespace Character
 {
     //public sealed class PlayerController : GameListenerServiceMono<IPlayerController>, IPlayerController, IInitGameListener, IFinishGameListener, IPauseGameListener, IResumeGameListener
-    public sealed class PlayerController : MonoBehaviour, IPlayerController, IStartPlayGameListener, IFinishGameListener, IPauseGameListener, IResumeGameListener, IInitializable, IDisposable
+    public sealed class PlayerController : MonoBehaviour, IPlayerController, IStartPlayGameListener, IFinishGameListener, IPauseGameListener, IResumeGameListener, ITickGameListener, IInitializable, IDisposable
     {
         private InputManager _inputManager;
+        private MainGameLoop _mainGameLoop;
+        
         [SerializeField] private MoveComponent _moveComponent;
         [SerializeField] private HitPointsComponent _hitPointsComponent;
         [SerializeField] private ShootFacade _shootFacade;
@@ -30,9 +33,11 @@ namespace Character
         }
 
         [Inject]
-        public void Construct(InputManager inputManager)
+        public void Construct(InputManager inputManager, MainGameLoop mainGameLoop, IBulletSystem bulletSystem)
         {
             _inputManager = inputManager;
+            _mainGameLoop = mainGameLoop;
+            _shootFacade.SetBulletSystem(bulletSystem);
         }
 
 
@@ -60,15 +65,22 @@ namespace Character
             _inputManager.OnShoot += _shootFacade.Shoot;
         }
 
-        void  IInitializable.Initialize()
+        void IInitializable.Initialize()
         {
-            IGameListener.OnRegistry?.Invoke(this);    
-        }
-
-        void IDisposable.Dispose()
-        {
-            IGameListener.OnUnRegistry?.Invoke(this);
+            _mainGameLoop.Add(this);
+            //IGameListener.OnRegistry?.Invoke(this);
         }
         
+        void IDisposable.Dispose()
+        {
+            _mainGameLoop.Remove(this);
+            //IGameListener.OnUnRegistry?.Invoke(this);
+        }
+
+        public void GameTick(float deltaTime)
+        {
+            _moveComponent.GameTick(deltaTime);
+            _shootFacade.GameTick(deltaTime);
+        }
     }
 }

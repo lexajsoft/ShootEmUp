@@ -16,12 +16,12 @@ namespace Bullets
         public int physicsLayer;
     }
     
-    public sealed class Bullet : GameListenerMono, ITickGameListener
+    // тут от монобеха не уйти так как требуется отлавливать onTriggerEnter2D
+    public sealed class Bullet : MonoBehaviour, ITickGameListener//GameListenerMono, ITickGameListener
     {
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private SpriteRenderer spriteRenderer;
         private Vector2 _direct;
-
 
         public BulletData BulletData { get; private set; }
 

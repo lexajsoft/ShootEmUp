@@ -2,10 +2,11 @@ using System;
 using GameLoop;
 using GameLoop.Interfaces;
 using UnityEngine;
+using Zenject;
 
 namespace Level
 {
-    public sealed class LevelBackground : GameListenerMono, IStartPlayGameListener ,ITickGameListener
+    public sealed class LevelBackground : MonoBehaviour, IInitializable, IDisposable, IStartPlayGameListener, ITickGameListener
     {
         [Serializable]
         public sealed class Params
@@ -16,7 +17,7 @@ namespace Level
         }
 
         [SerializeField] private Params m_params;
-        
+
         private float startPositionY;
         private float endPositionY;
         private float movingSpeedY;
@@ -24,38 +25,51 @@ namespace Level
         private float positionZ;
         private Transform myTransform;
 
+        private MainGameLoop _mainGameLoop;
 
-
-        
-        
+        [Inject]
+        public void Construct(MainGameLoop mainGameLoop)
+        {
+            _mainGameLoop = mainGameLoop;
+        }
 
         public void GameTick(float deltaTime)
         {
-            if (this.myTransform.position.y <= this.endPositionY)
+            if (myTransform.position.y <= this.endPositionY)
             {
-                this.myTransform.position = new Vector3(
-                    this.positionX,
-                    this.startPositionY,
-                    this.positionZ
+                myTransform.position = new Vector3(
+                    positionX,
+                    startPositionY,
+                    positionZ
                 );
             }
 
-            this.myTransform.position -= new Vector3(
-                this.positionX,
-                this.movingSpeedY * deltaTime,
-                this.positionZ
+            myTransform.position -= new Vector3(
+                positionX,
+                movingSpeedY * deltaTime,
+                positionZ
             );
         }
 
         public void StartPlay()
         {
-            this.startPositionY = this.m_params.m_startPositionY;
-            this.endPositionY = this.m_params.m_endPositionY;
-            this.movingSpeedY = this.m_params.m_movingSpeedY;
-            this.myTransform = this.transform;
-            var position = this.myTransform.position;
-            this.positionX = position.x;
-            this.positionZ = position.z;
+            startPositionY = m_params.m_startPositionY;
+            endPositionY = m_params.m_endPositionY;
+            movingSpeedY = m_params.m_movingSpeedY;
+            myTransform = transform;
+            var position = myTransform.position;
+            positionX = position.x;
+            positionZ = position.z;
+        }
+
+        void IInitializable.Initialize()
+        {
+            _mainGameLoop.Add(this);
+        }
+
+        void IDisposable.Dispose()
+        {
+            _mainGameLoop.Add(this);
         }
     }
 }
