@@ -1,8 +1,6 @@
-﻿using Commands;
-using GameLoop;
+﻿using GameLoop;
 using ShootEmUp;
 using UnityEngine;
-using GameManagers;
 using Zenject;
 
 namespace Character
@@ -16,7 +14,7 @@ namespace Character
         private MainGameLoop _mainGameLoop;
 
         [Inject]
-        public void Construct(GameLoop.MainGameLoop mainGameLoop)
+        public void Construct(MainGameLoop mainGameLoop)
         {
             _mainGameLoop = mainGameLoop;
         }

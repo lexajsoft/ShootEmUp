@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Character;
 using Components;
 using GameLoop;
 using GameLoop.Interfaces;
-using Installer;
 using Level;
-using ShootEmUp;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Bullets
@@ -73,7 +69,7 @@ namespace Bullets
             }
             else
             {
-                bullet = GameObject.Instantiate(prefab, worldTransform);
+                bullet = Instantiate(prefab, worldTransform);
             }
 
             

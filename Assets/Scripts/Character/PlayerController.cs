@@ -5,7 +5,6 @@ using Facades;
 using GameLoop;
 using GameLoop.Interfaces;
 using Input;
-using Installer;
 using ShootEmUp;
 using UnityEngine;
 using Zenject;

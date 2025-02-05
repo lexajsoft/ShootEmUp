@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Commands;
 using GameLoop;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,8 +26,6 @@ namespace UI.Screens
                 StartCoroutine(WaitAndStart());
             });
         }
-
-        
         
         private IEnumerator WaitAndStart()
         {

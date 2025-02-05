@@ -6,9 +6,6 @@ namespace Bullets
         fileName = "BulletConfig",
         menuName = "Bullets/New BulletConfig"
     )]
-    
-    
-    
     public sealed class BulletConfig : ScriptableObject
     {
         [SerializeField] private BulletConfigData _bulletConfigData;

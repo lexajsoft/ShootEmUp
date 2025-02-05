@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Bullets;
 using Character;
-using Commands;
 using Enemy;
 using GameLoop;
 using GameManagers;
@@ -10,7 +8,6 @@ using Input;
 using Level;
 using UI.Screens;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Installer

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
 
-//[DefaultExecutionOrder(-1000)]
+[DefaultExecutionOrder(-1000)]
 public class Launcher : MonoBehaviour
 {
     [Header("В контексте должен быть выключен AUTO RUN")]
